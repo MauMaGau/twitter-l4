@@ -80,6 +80,27 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testGetList()
+    {
+        // lists/show can accept either a list id...
+        $twitter - $this->getTwitterExpecting('lists/show', array(
+            'list_id' => 1
+        ));
+
+        // Or a list_slug and owner_screen_name...
+        $twitter - $this->getTwitterExpecting('lists/show', array(
+            'list_slug' => 'loves_somebody',
+            'owner_screen_name' => 'elwood'
+        ));
+
+        // Or a list_slug and owner_id
+        $twitter - $this->getTwitterExpecting('lists/show', array(
+            'list_slug' => 'loves_somebody',
+            'owner_id' => 1
+        ));
+
+    }
+
     /**
      * @expectedException Exception
      */
