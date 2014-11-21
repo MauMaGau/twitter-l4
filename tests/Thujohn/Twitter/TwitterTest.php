@@ -30,18 +30,18 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
     public function getListTest($endpoint)
     {
         // lists/show can accept either a list id...
-        $twitter - $this->getTwitterExpecting($endpoint, array(
+        $twitter = $this->getTwitterExpecting($endpoint, array(
             'list_id' => 1
         ));
 
         // Or a list_slug and owner_screen_name...
-        $twitter - $this->getTwitterExpecting($endpoint, array(
+        $twitter = $this->getTwitterExpecting($endpoint, array(
             'list_slug' => 'loves_somebody',
             'owner_screen_name' => 'elwood'
         ));
 
         // Or a list_slug and owner_id
-        $twitter - $this->getTwitterExpecting($endpoint, array(
+        $twitter = $this->getTwitterExpecting($endpoint, array(
             'list_slug' => 'loves_somebody',
             'owner_id' => 1
         ));
@@ -111,6 +111,13 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
     public function testGetListMembers()
     {
         $this->getListTest('lists/members');
+    }
+
+    public function testGetListMember()
+    {
+        $this->getListTest('lists/members/show');
+
+
     }
 
     /**
