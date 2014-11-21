@@ -24,6 +24,29 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         return $twitter;
     }
 
+    /*
+    * Most list resources require the same parameters
+    */
+    public function getListTest($endpoint)
+    {
+        // lists/show can accept either a list id...
+        $twitter - $this->getTwitterExpecting($endpoint, array(
+            'list_id' => 1
+        ));
+
+        // Or a list_slug and owner_screen_name...
+        $twitter - $this->getTwitterExpecting($endpoint, array(
+            'list_slug' => 'loves_somebody',
+            'owner_screen_name' => 'elwood'
+        ));
+
+        // Or a list_slug and owner_id
+        $twitter - $this->getTwitterExpecting($endpoint, array(
+            'list_slug' => 'loves_somebody',
+            'owner_id' => 1
+        ));
+    }
+
     public function testGetUsersWithScreenName()
     {
         $twitter = $this->getTwitterExpecting('users/show', array(
@@ -82,23 +105,12 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
 
     public function testGetList()
     {
-        // lists/show can accept either a list id...
-        $twitter - $this->getTwitterExpecting('lists/show', array(
-            'list_id' => 1
-        ));
+        $this->getListTest('lists/show');
+    }
 
-        // Or a list_slug and owner_screen_name...
-        $twitter - $this->getTwitterExpecting('lists/show', array(
-            'list_slug' => 'loves_somebody',
-            'owner_screen_name' => 'elwood'
-        ));
-
-        // Or a list_slug and owner_id
-        $twitter - $this->getTwitterExpecting('lists/show', array(
-            'list_slug' => 'loves_somebody',
-            'owner_id' => 1
-        ));
-
+    public function testGetListMembers()
+    {
+        $this->getListTest('lists/members');
     }
 
     /**
