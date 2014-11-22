@@ -217,7 +217,7 @@ class Twitter extends tmhOAuth {
 	{
 		return $this->linkUser($tweet->user) . '/status/' . $tweet->id_str;
 	}
-	
+
 	public function linkRetweet($tweet)
 	{
 		return '//twitter.com/intent/retweet?tweet_id=' . $tweet->id_str;
@@ -227,7 +227,7 @@ class Twitter extends tmhOAuth {
 	{
 		return '//twitter.com/intent/favorite?tweet_id=' . $tweet->id_str;
 	}
-	
+
 	/**
 	 * Parameters :
 	 * - count (1-200)
@@ -1290,8 +1290,14 @@ class Twitter extends tmhOAuth {
 	 */
 	public function getListMember($parameters = array())
 	{
-		if (!array_key_exists('list_id', $parameters) || !array_key_exists('slug', $parameters) || !array_key_exists('user_id', $parameters) || !array_key_exists('screen_name', $parameters))
-		{
+        if(!(
+            (array_key_exists('list_id', $parameters) && array_key_exists('user_id', $parameters)) ||
+            (array_key_exists('list_id', $parameters) && array_key_exists('screen_name', $parameters)) ||
+            (array_key_exists('slug', $parameters) && array_key_exists('owner_screen_name', $parameters) && array_key_exists('user_id', $parameters)) ||
+            (array_key_exists('slug', $parameters) && array_key_exists('owner_screen_name', $parameters) && array_key_exists('screen_name', $parameters)) ||
+            (array_key_exists('slug', $parameters) && array_key_exists('owner_id', $parameters) && array_key_exists('user_id', $parameters)) ||
+            (array_key_exists('slug', $parameters) && array_key_exists('owner_id', $parameters) && array_key_exists('screen_name', $parameters))
+        )){
 			throw new \Exception('Parameter required missing : list_id, slug, user_id or screen_name');
 		}
 
@@ -1312,8 +1318,10 @@ class Twitter extends tmhOAuth {
 	 */
 	public function getListMembers($parameters = array())
 	{
-		if (!array_key_exists('list_id', $parameters) && !array_key_exists('slug', $parameters))
-		{
+        if (!array_key_exists('list_id', $parameters) && (!array_key_exists('slug', $parameters) ||
+                (array_key_exists('slug', $parameters) && !array_key_exists('owner_screen_name', $parameters) && !array_key_exists('owner_id', $parameters))
+            )
+        ){
 			throw new \Exception('Parameter required missing : list_id or slug');
 		}
 
@@ -1411,9 +1419,11 @@ class Twitter extends tmhOAuth {
 	 */
 	public function getList($parameters = array())
 	{
-		if (!array_key_exists('list_id', $parameters) && !array_key_exists('slug', $parameters))
-		{
-			throw new \Exception('Parameter required missing : list_id or slug');
+		if (!array_key_exists('list_id', $parameters) && (!array_key_exists('slug', $parameters) ||
+                (array_key_exists('slug', $parameters) && !array_key_exists('owner_screen_name', $parameters) && !array_key_exists('owner_id', $parameters))
+            )
+		){
+			throw new \Exception('Parameter required missing : list_id or slug and either owner_screen_name or owner_id');
 		}
 
 		$response = $this->query('lists/show', 'GET', $parameters);

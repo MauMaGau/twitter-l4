@@ -100,6 +100,9 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    /*
+    * getList can accept list_id, or slug and owner_screen_name, or slug and owner_id
+    */
     public function testGetListWithId()
     {
         $this->paramTest('lists/show', 'getList', array(
@@ -128,13 +131,15 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetListInvalid()
     {
-        $this->paramTest('lists/show', 'getList', array(
-            'slug' => 'sweetheart_to_miss'
+        $twitter = $this->getTwitter();
+
+        $twitter->getList(array(
+            'slug' => 'sweetheart_to_miss',
         ));
     }
 
     /*
-    * getListMembers can accept list_id, or slug and user name, or slug and user id
+    * getListMembers can accept list_id, or slug and owner_screen_name, or slug and owner_id
     */
     public function testGetListMembersWithId()
     {
@@ -164,22 +169,79 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetListMembersInvalid()
     {
-        $this->paramTest('lists/members', 'getListMembers', array(
-            'slug' => 'sweetheart_to_miss'
+        $twitter = $this->getTwitter();
+
+        $twitter->getListMembers(array(
+            'slug' => 'sweetheart_to_miss',
         ));
     }
 
-    public function testGetListMember()
+    /*
+    * getListMember can accept list_id and user_id, or list_id and screen_name,
+    * or slug and owner_screen_name and user_id, or slug and owner_screen_name and screen_name,
+    * or slug and owner_id and user_id, or slug and owner_id and screen_name
+    */
+    public function testGetListMemberWithIdAndUserId()
     {
-        // require
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'list_id' => 1,
+            'user_id' => 2
+        ));
+    }
 
-        // $twitter = $this->getTwitterExpecting('lists/members/show', array(
-        //     ''
-        // ));
+    public function testGetListMemberWithIdAndScreenName()
+    {
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'list_id' => 1,
+            'screen_name' => 'jake'
+        ));
+    }
 
-        // $twitter->getUsersLookup(array(
-        //     'screen_name' => implode(',', array('me', 'you', 'everybody'))
-        // ));
+    public function testGetListMemberWithSlugAndOwnerNameAndUserId()
+    {
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_screen_name' => 'elwood',
+            'user_id' => 2
+        ));
+    }
 
+    public function testGetListMemberWithSlugAndOwnerNameAndScreenName()
+    {
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_screen_name' => 'elwood',
+            'screen_name' => 'jake'
+        ));
+    }
+
+    public function testGetListMemberWithSlugAndOwnerIdAndScreenName()
+    {
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_id' => 1,
+            'screen_name' => 'jake'
+        ));
+    }
+
+    public function testGetListMemberWithSlugAndOwnerIdAndUserId()
+    {
+        $this->paramTest('lists/members/show', 'getListMember', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_id' => 1,
+            'user_id' => 2
+        ));
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testGetListMemberInvalid()
+    {
+        $twitter = $this->getTwitter();
+
+        $twitter->getListMember(array(
+            'slug' => 'sweetheart_to_miss',
+        ));
     }
 }
