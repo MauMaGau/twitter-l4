@@ -24,27 +24,11 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         return $twitter;
     }
 
-    /*
-    * Most list resources require the same parameters
-    */
-    public function getListTest($endpoint)
+    public function paramTest($endpoint, $testedMethod, $params)
     {
-        // lists/show can accept either a list id...
-        $twitter = $this->getTwitterExpecting($endpoint, array(
-            'list_id' => 1
-        ));
+        $twitter = $this->getTwitterExpecting($endpoint, $params);
 
-        // Or a list_slug and owner_screen_name...
-        $twitter = $this->getTwitterExpecting($endpoint, array(
-            'list_slug' => 'loves_somebody',
-            'owner_screen_name' => 'elwood'
-        ));
-
-        // Or a list_slug and owner_id
-        $twitter = $this->getTwitterExpecting($endpoint, array(
-            'list_slug' => 'loves_somebody',
-            'owner_id' => 1
-        ));
+        $twitter->$testedMethod($params);
     }
 
     public function testGetUsersWithScreenName()
@@ -103,32 +87,99 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    public function testGetList()
-    {
-        $this->getListTest('lists/show');
-    }
-
-    public function testGetListMembers()
-    {
-        $this->getListTest('lists/members');
-    }
-
-    public function testGetListMember()
-    {
-        $this->getListTest('lists/members/show');
-
-
-    }
-
     /**
      * @expectedException Exception
      */
     public function testGetUsersLookupInvalid()
     {
+        // Requires either a list id and user_id
         $twitter = $this->getTwitter();
 
         $twitter->getUsersLookup(array(
             'include_entities' => true
         ));
+    }
+
+    public function testGetListWithId()
+    {
+        $this->paramTest('lists/show', 'getList', array(
+            'list_id'=>1
+        ));
+    }
+
+    public function testGetListWithSlugAndName()
+    {
+        $this->paramTest('lists/show', 'getList', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_screen_name' => 'elwood'
+        ));
+    }
+
+    public function testGetListWithSlugAndUserId()
+    {
+        $this->paramTest('lists/show', 'getList', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_id' => 1
+        ));
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testGetListInvalid()
+    {
+        $this->paramTest('lists/show', 'getList', array(
+            'slug' => 'sweetheart_to_miss'
+        ));
+    }
+
+    /*
+    * getListMembers can accept list_id, or slug and user name, or slug and user id
+    */
+    public function testGetListMembersWithId()
+    {
+        $this->paramTest('lists/members', 'getListMembers', array(
+            'list_id' => 1
+        ));
+    }
+
+    public function testGetListMembersWithSlugAndName()
+    {
+        $this->paramTest('lists/members', 'getListMembers', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_screen_name' => 'elwood'
+        ));
+    }
+
+    public function testGetListMembersWithSlugAndUserId()
+    {
+        $this->paramTest('lists/members', 'getListMembers', array(
+            'slug' => 'sugar_to_kiss',
+            'owner_id' => 1
+        ));
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testGetListMembersInvalid()
+    {
+        $this->paramTest('lists/members', 'getListMembers', array(
+            'slug' => 'sweetheart_to_miss'
+        ));
+    }
+
+    public function testGetListMember()
+    {
+        // require
+
+        // $twitter = $this->getTwitterExpecting('lists/members/show', array(
+        //     ''
+        // ));
+
+        // $twitter->getUsersLookup(array(
+        //     'screen_name' => implode(',', array('me', 'you', 'everybody'))
+        // ));
+
     }
 }
